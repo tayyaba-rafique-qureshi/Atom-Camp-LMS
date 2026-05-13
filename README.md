@@ -132,6 +132,7 @@ Colors extracted from atomcamp.com:
 
 ---
 
+<<<<<<< HEAD
 ## 👥 Team Members
 
 - **Samreen Farhat**
@@ -140,3 +141,6 @@ Colors extracted from atomcamp.com:
 
 ---
 
+=======
+*Built for Aurex AI Hackathon 2026*
+>>>>>>> 775f7b2a90891eec3b0aac0977f08a7ec787c7b6
