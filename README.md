@@ -132,4 +132,11 @@ Colors extracted from atomcamp.com:
 
 ---
 
-*Built for atomcamp Hackathon 2025*
+## 👥 Team Members
+
+- **Samreen Farhat**
+- **Tayyaba Rafique**
+- **Umama Hidayat Khan**
+
+---
+

@@ -4,12 +4,6 @@ import { motion } from 'framer-motion'
 import { loginUser } from '../api'
 import { saveAuth, getRoleHome } from '../auth'
 
-// Demo credentials for quick testing
-const DEMO_ACCOUNTS = [
-  { label: 'Learner Demo', email: 'demo@learner.com', password: 'demo123', role: 'learner' },
-  { label: 'Instructor Demo', email: 'demo@instructor.com', password: 'demo123', role: 'instructor' },
-]
-
 export default function Login() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
@@ -29,10 +23,6 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function fillDemo(account) {
-    setForm({ email: account.email, password: account.password })
   }
 
   return (
@@ -60,28 +50,6 @@ export default function Login() {
           <p style={{ color: 'var(--color-ac-subtext)' }} className="text-sm">
             Sign in to atomcamp LMS
           </p>
-        </div>
-
-        {/* Demo mode buttons */}
-        <div
-          style={{ background: 'var(--color-ac-surface)', border: '1px solid var(--color-ac-border)' }}
-          className="rounded-xl p-3 mb-4"
-        >
-          <p style={{ color: 'var(--color-ac-subtext)' }} className="text-xs mb-2 font-medium">
-            ⚡ Quick demo access
-          </p>
-          <div className="flex gap-2">
-            {DEMO_ACCOUNTS.map((a) => (
-              <button
-                key={a.role}
-                type="button"
-                onClick={() => fillDemo(a)}
-                className="btn-ghost flex-1 text-xs py-1.5"
-              >
-                {a.label}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Form card */}

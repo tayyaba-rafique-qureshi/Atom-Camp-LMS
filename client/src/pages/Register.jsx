@@ -6,34 +6,26 @@ import { saveAuth, getRoleHome } from '../auth'
 
 const SKILLS = ['Python', 'JavaScript', 'HTML/CSS', 'Data Analysis', 'Machine Learning', 'SQL', 'React', 'Node.js']
 
-const ROLES = [
-  { id: 'learner',      label: 'Learner',      desc: 'Enrolled in a bootcamp', icon: '🎓' },
-  { id: 'instructor',   label: 'Instructor',   desc: 'Teaching bootcamp sessions', icon: '👨‍🏫' },
-  { id: 'coordinator',  label: 'Coordinator',  desc: 'Managing cohort operations', icon: '📋' },
-  { id: 'admin',        label: 'Admin',        desc: 'Platform administration', icon: '⚙️' },
-]
-
 export default function Register() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
-    name: '', email: '', password: '', role: 'learner',
+    name: '', email: '', password: '',
     learningStyle: 'visual', goal: '', weeklyStudyHours: 10, skillScores: {},
   })
 
   const f = (k, v) => setForm((p) => ({ ...p, [k]: v }))
   const setSkill = (skill, val) => setForm((p) => ({ ...p, skillScores: { ...p.skillScores, [skill]: Number(val) } }))
-  const isLearner = form.role === 'learner'
-  const totalSteps = isLearner ? 2 : 1
 
   async function submit(e) {
     e.preventDefault()
     setLoading(true)
     setError('')
     try {
-      const res = await registerUser(form)
+      // role is always 'learner' — enforced here and on the server
+      const res = await registerUser({ ...form, role: 'learner' })
       saveAuth(res.data.data)
       navigate(getRoleHome(res.data.data.role))
     } catch (err) {
@@ -60,18 +52,31 @@ export default function Register() {
           >
             A
           </div>
-          <h1 style={{ color: 'var(--color-ac-text)' }} className="text-2xl font-bold mb-1">Create account</h1>
-          <p style={{ color: 'var(--color-ac-subtext)' }} className="text-sm">Join atomcamp LMS</p>
+          <h1 style={{ color: 'var(--color-ac-text)' }} className="text-2xl font-bold mb-1">Create your account</h1>
+          <p style={{ color: 'var(--color-ac-subtext)' }} className="text-sm">Join atomcamp as a learner</p>
+        </div>
+
+        {/* Staff login notice */}
+        <div
+          style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)' }}
+          className="rounded-xl px-4 py-3 mb-5 text-center"
+        >
+          <p style={{ color: 'var(--color-ac-subtext)' }} className="text-sm">
+            Instructor, Coordinator, or Admin?{' '}
+            <Link to="/login" style={{ color: 'var(--color-ac-orange)' }} className="font-medium hover:underline">
+              Log in with your atomcamp credentials →
+            </Link>
+          </p>
         </div>
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          {Array.from({ length: totalSteps }).map((_, i) => (
+          {[1, 2].map((i) => (
             <div key={i} className="flex items-center gap-2">
               <div
                 style={{
-                  background: step > i ? 'var(--color-ac-orange)' : step === i + 1 ? 'var(--color-ac-orange)' : 'var(--color-ac-border)',
-                  width: step === i + 1 ? '2rem' : '0.5rem',
+                  background: step >= i ? 'var(--color-ac-orange)' : 'var(--color-ac-border)',
+                  width: step === i ? '2rem' : '0.5rem',
                   height: '0.5rem',
                   borderRadius: '9999px',
                   transition: 'all 0.3s',
@@ -80,56 +85,57 @@ export default function Register() {
             </div>
           ))}
           <span style={{ color: 'var(--color-ac-subtext)' }} className="text-xs ml-1">
-            Step {step} of {totalSteps}
+            Step {step} of 2
           </span>
         </div>
 
         <div className="card">
           <AnimatePresence mode="wait">
+            {/* ── Step 1: Basic info ── */}
             {step === 1 && (
               <motion.form
                 key="step1"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                onSubmit={isLearner ? (e) => { e.preventDefault(); setStep(2) } : submit}
+                onSubmit={(e) => { e.preventDefault(); setStep(2) }}
                 className="space-y-4"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="label">Full name</label>
-                    <input required className="input" placeholder="Sara Ahmed" value={form.name} onChange={(e) => f('name', e.target.value)} />
+                    <input
+                      required
+                      className="input"
+                      placeholder="Sara Ahmed"
+                      value={form.name}
+                      onChange={(e) => f('name', e.target.value)}
+                    />
                   </div>
                   <div>
                     <label className="label">Email</label>
-                    <input type="email" required className="input" placeholder="sara@email.com" value={form.email} onChange={(e) => f('email', e.target.value)} />
+                    <input
+                      type="email"
+                      required
+                      className="input"
+                      placeholder="sara@email.com"
+                      value={form.email}
+                      onChange={(e) => f('email', e.target.value)}
+                    />
                   </div>
-                </div>
-                <div>
-                  <label className="label">Password</label>
-                  <input type="password" required minLength={6} className="input" placeholder="Min. 6 characters" value={form.password} onChange={(e) => f('password', e.target.value)} />
                 </div>
 
                 <div>
-                  <label className="label">I am joining as</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {ROLES.map((role) => (
-                      <button
-                        type="button"
-                        key={role.id}
-                        onClick={() => f('role', role.id)}
-                        style={{
-                          background: form.role === role.id ? 'var(--color-ac-orange-t)' : 'var(--color-ac-dark)',
-                          border: `1px solid ${form.role === role.id ? 'var(--color-ac-orange)' : 'var(--color-ac-border)'}`,
-                          color: form.role === role.id ? 'var(--color-ac-orange)' : 'var(--color-ac-muted)',
-                        }}
-                        className="text-left p-3 rounded-xl transition-all hover:border-orange-500"
-                      >
-                        <p className="text-sm font-semibold">{role.icon} {role.label}</p>
-                        <p className="text-xs mt-0.5 opacity-70">{role.desc}</p>
-                      </button>
-                    ))}
-                  </div>
+                  <label className="label">Password</label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    className="input"
+                    placeholder="Min. 6 characters"
+                    value={form.password}
+                    onChange={(e) => f('password', e.target.value)}
+                  />
                 </div>
 
                 {error && (
@@ -138,13 +144,14 @@ export default function Register() {
                   </div>
                 )}
 
-                <button type="submit" disabled={loading} className="btn-primary w-full justify-center">
-                  {isLearner ? 'Next — set up skills →' : loading ? 'Creating...' : 'Create account →'}
+                <button type="submit" className="btn-primary w-full justify-center">
+                  Next — set up your skills →
                 </button>
               </motion.form>
             )}
 
-            {step === 2 && isLearner && (
+            {/* ── Step 2: Learner profile ── */}
+            {step === 2 && (
               <motion.form
                 key="step2"
                 initial={{ opacity: 0, x: 20 }}
@@ -189,7 +196,8 @@ export default function Register() {
                     onChange={(e) => f('weeklyStudyHours', Number(e.target.value))}
                   />
                   <div style={{ color: 'var(--color-ac-subtext)' }} className="flex justify-between text-xs mt-1">
-                    <span>2h</span><span>40h</span>
+                    <span>2h</span>
+                    <span>40h</span>
                   </div>
                 </div>
 
@@ -230,7 +238,7 @@ export default function Register() {
                     ← Back
                   </button>
                   <button type="submit" disabled={loading} className="btn-primary flex-1 justify-center">
-                    {loading ? 'Creating...' : 'Create account →'}
+                    {loading ? 'Creating account...' : 'Create account →'}
                   </button>
                 </div>
               </motion.form>
