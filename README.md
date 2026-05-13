@@ -132,4 +132,4 @@ Colors extracted from atomcamp.com:
 
 ---
 
-*Built for atomcamp Hackathon 2025*
+*Built for Aurex AI Hackathon 2026*
